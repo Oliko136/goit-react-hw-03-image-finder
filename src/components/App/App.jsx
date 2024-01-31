@@ -1,9 +1,10 @@
 import { Component } from "react";
-import { Searchbar } from "./Searchbar/Searchbar";
-import { ImageGallery } from "./ImageGallery/ImageGallery";
-import { Button } from "./Button/Button";
-import { Loader } from "./Loader/Loader"; 
+import { Searchbar } from "../Searchbar/Searchbar";
+import { ImageGallery } from "../ImageGallery/ImageGallery";
+import { Button } from "../Button/Button";
+import { Loader } from "../Loader/Loader"; 
 import { fetchImages } from "services/images-api";
+import styles from './App.module.css';
 
 export class App extends Component {
   state = {
@@ -60,10 +61,10 @@ export class App extends Component {
     const { query, images, error, status, page, maxPage } = this.state;
 
     return (
-      <>
+      <div className={styles.App}>
         <Searchbar onSubmit={handleSearch} />
         
-        {status === 'idle' && <p>Search images</p>}
+        {status === 'idle' && <p className={styles.DefaultText}>Search images</p>}
         {status === 'pending' && <Loader />}
         {status === 'rejected' && <p>{error}</p>}
         {status === 'resolved' && !images.length && <p>Sorry, no images for {query}. Please, enter a valid query.</p>}
@@ -72,7 +73,7 @@ export class App extends Component {
           <ImageGallery items={images} />
           {page < maxPage && <Button onClick={loadMore}>Load More</Button>}
           </>}
-      </>
+      </div>
     )
   }
 };

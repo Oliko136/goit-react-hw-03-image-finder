@@ -1,4 +1,5 @@
 import { Vortex } from 'react-loader-spinner';
+import styles from './Loader.module.css';
 
 export const Loader = () => {
     return(
@@ -8,7 +9,7 @@ export const Loader = () => {
             width="80"
             ariaLabel="vortex-loading"
             wrapperStyle={{}}
-            wrapperClass="vortex-wrapper"
+            wrapperClass={styles.Loader}
             colors={['red', 'green', 'blue', 'yellow', 'orange', 'purple']}
             />)
 }
