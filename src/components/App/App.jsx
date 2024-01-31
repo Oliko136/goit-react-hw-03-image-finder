@@ -3,6 +3,7 @@ import { Searchbar } from "../Searchbar/Searchbar";
 import { ImageGallery } from "../ImageGallery/ImageGallery";
 import { Button } from "../Button/Button";
 import { Loader } from "../Loader/Loader"; 
+import { Modal } from "../Modal/Modal";
 import { fetchImages } from "services/images-api";
 import styles from './App.module.css';
 
@@ -13,7 +14,9 @@ export class App extends Component {
     error: null,
     status: 'idle',
     page: 1,
-    maxPage: null
+    maxPage: null,
+    modalOpen: false,
+    imageDetails: {}
   }
 
   async componentDidUpdate(_, prevState) {
@@ -33,8 +36,6 @@ export class App extends Component {
           maxPage: Math.ceil(totalHits / 12 ),
           status: 'resolved'
         }))
-
-        console.log(totalHits);
         
       }
       catch (error) {
@@ -54,11 +55,28 @@ export class App extends Component {
   loadMore = () => {
     this.setState(({ page }) => ({page: page + 1}));
   }
+
+  showModal = ({ largeImageURL, tags }) => {
+    this.setState({
+      modalOpen: true,
+      imageDetails: {
+        largeImageURL,
+        tags
+      }
+    }) 
+  }
+
+  closeModal = () => {
+    this.setState({
+      modalOpen: false,
+      imageDetails: {}
+    })
+  }
   
 
   render() {
-    const { handleSearch,loadMore } = this;
-    const { query, images, error, status, page, maxPage } = this.state;
+    const { handleSearch,loadMore, showModal, closeModal } = this;
+    const { query, images, error, status, page, maxPage, modalOpen, imageDetails } = this.state;
 
     return (
       <div className={styles.App}>
@@ -67,12 +85,16 @@ export class App extends Component {
         {status === 'idle' && <p className={styles.DefaultText}>Search images</p>}
         {status === 'pending' && <Loader />}
         {status === 'rejected' && <p>{error}</p>}
-        {status === 'resolved' && !images.length && <p>Sorry, no images for {query}. Please, enter a valid query.</p>}
+        {status === 'resolved' && !images.length && <p className={styles.ErrorMessage}>Sorry, no images for {query}. Please, enter a valid query.</p>}
         {status === 'resolved' && images.length > 0 &&
           <>
-          <ImageGallery items={images} />
-          {page < maxPage && <Button onClick={loadMore}>Load More</Button>}
+            <ImageGallery showModal={showModal} items={images} />
+            {page < maxPage && <Button onClick={loadMore}>Load More</Button>}
           </>}
+        {modalOpen &&
+          <Modal close={closeModal}>
+            <img src={imageDetails.largeImageURL} alt={imageDetails.tags} />
+          </Modal>}
       </div>
     )
   }
