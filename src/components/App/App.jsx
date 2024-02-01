@@ -32,7 +32,7 @@ export class App extends Component {
         const { hits, totalHits } = await fetchImages(nextQuery, nextPage);
 
         this.setState(({ images }) => ({
-          images: hits?.length ? [...images, ...hits] : images,
+          images: [...images, ...hits],
           maxPage: Math.ceil(totalHits / 12 ),
           status: 'resolved'
         }))
@@ -86,7 +86,7 @@ export class App extends Component {
         {status === 'pending' && <Loader />}
         {status === 'rejected' && <p>{error}</p>}
         {status === 'resolved' && !images.length && <p className={styles.ErrorMessage}>Sorry, no images for {query}. Please, enter a valid query.</p>}
-        {status === 'resolved' && images.length > 0 &&
+        {images.length > 0 &&
           <>
             <ImageGallery showModal={showModal} items={images} />
             {page < maxPage && <Button onClick={loadMore}>Load More</Button>}
